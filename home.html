@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muro Social con Firebase</title>
+    <link rel="stylesheet" href="css/menu.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <style>
+      /* Estilos generales */
+      body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #ff66b3;  /* Rosa similar a la imagen */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+        }
+        
+        .search {
+            padding: 8px;
+            border-radius: 20px;
+            border: none;
+            width: 300px;
+        }
+        
+        .main {
+            display: flex;
+        }
+        
+        /* Sidebar estilo BBW */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            height: 100vh;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-menu li i {
+            margin-right: 10px;
+            color: #ff66b3;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #fff0f5;
+        }
+        
+        /* Contenido principal */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        /* Publicaciones */
+        .post {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .post-user {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .post-content {
+            margin: 10px 0;
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        
+        .post-action {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-action i {
+            margin-right: 5px;
+        }
+        
+        /* Botones de interacción */
+        .btn {
+            background-color: #ff66b3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background-color: #e55c9f;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">SocialApp</div>
+        <input type="text" class="search" placeholder="Buscar...">
+        <a href="index.html"> <i class="fas fa-sign-out-alt"></i> Cerrar sesión </a>
+    </div>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+        <div class="main">
+            <div class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><i class="fas fa-user"></i> Mi perfil</li>
+                    <li><i class="fas fa-users"></i> Amigos</li>
+                    <li><i class="fas fa-plus-circle"></i> Agregar contenido</li>
+                    <li><i class="fas fa-video"></i> Iniciar video</li>
+                    <li><i class="fas fa-cog"></i> Configuración</li>
+                    <li><i class="fas fa-moon"></i> Modo oscuro</li>
+                    <li><i class="fas fa-sign-out-alt"></i> Cerrar sesión</li>
+                </ul>
+            </div>
+
+
+
+   
+
+
+
+
+
+
+
+
+        <div class="content">
+            <div class="post-box">
+                <input type="text" id="post-input" class="post-input" placeholder="¿Qué estás pensando?">
+                
+                <div class="media-buttons">
+                    <button id="photo-button" class="media-button">
+                        <i>📷</i> Foto
+                    </button>
+                    <button id="video-button" class="media-button">
+                        <i>🎥</i> Video
+                    </button>
+                </div>
+                
+                <input type="file" id="media-input" accept="image/*, video/*" class="hidden">
+                <div id="media-preview"></div>
+                
+                <button id="post-button" class="post-button">Publicar</button>
+            </div>
+            
+            <div id="posts-container">
+                <div class="loading">Cargando publicaciones...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script>
+        // Script para el menú desplegable
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuTitle = document.getElementById('menu-title');
+            const menuItems = document.getElementById('menu-items');
+            
+            menuTitle.addEventListener('click', function() {
+                menuItems.classList.toggle('show');
+                
+                // Cambiar el icono de flecha
+                if (menuItems.classList.contains('show')) {
+                    menuTitle.innerHTML = 'Menú ▲';
+                } else {
+                    menuTitle.innerHTML = 'Menú ▼';
+                }
+            });
+            
+            // Cerrar el menú si se hace clic fuera de él
+            document.addEventListener('click', function(event) {
+                if (!menuTitle.contains(event.target) && !menuItems.contains(event.target)) {
+                    menuItems.classList.remove('show');
+                    menuTitle.innerHTML = 'Menú ▼';
+                }
+            });
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
