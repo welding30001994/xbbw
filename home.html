@@ -16,12 +16,12 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f0f0f0; /* Negro claro como fondo */
             color: #333;
         }
         
         .header {
-            background-color: #ff66b3;  /* Rosa similar a la imagen */
+            background-color: #d10000;  /* Rojo */
             padding: 15px;
             display: flex;
             justify-content: space-between;
@@ -44,15 +44,16 @@
         
         .main {
             display: flex;
+            flex-wrap: wrap; /* Para responsive */
         }
         
-        /* Sidebar estilo BBW */
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background-color: white;
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            height: 100vh;
+            min-height: 100vh;
         }
         
         .sidebar-menu {
@@ -70,17 +71,18 @@
         
         .sidebar-menu li i {
             margin-right: 10px;
-            color: #ff66b3;
+            color: #d10000; /* Rojo */
         }
         
         .sidebar-menu li:hover {
-            background-color: #fff0f5;
+            background-color: #ffe6e6; /* Rojo muy claro */
         }
         
         /* Contenido principal */
         .content {
             flex: 1;
             padding: 20px;
+            background-color: #f0f0f0; /* Negro claro */
         }
         
         /* Publicaciones */
@@ -122,11 +124,12 @@
         
         .post-action i {
             margin-right: 5px;
+            color: #d10000; /* Rojo */
         }
         
         /* Botones de interacción */
         .btn {
-            background-color: #ff66b3;
+            background-color: #d10000; /* Rojo */
             color: white;
             border: none;
             padding: 8px 15px;
@@ -136,7 +139,136 @@
         }
         
         .btn:hover {
-            background-color: #e55c9f;
+            background-color: #b00000; /* Rojo más oscuro */
+        }
+
+        /* Estilos para el área de publicación */
+        .post-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .post-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .media-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .media-button {
+            background-color: #d10000; /* Rojo */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .post-button {
+            background-color: #d10000; /* Rojo */
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        /* Estilos responsive para móviles */
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                height: auto;
+                padding: 10px;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .sidebar-menu li {
+                white-space: nowrap;
+                border-bottom: none;
+                border-right: 1px solid #eee;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .search {
+                width: 150px;
+            }
+            
+            .header {
+                padding: 10px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .logo {
+                order: 1;
+            }
+            
+            .search {
+                order: 3;
+                width: 100%;
+            }
+            
+            .header a {
+                order: 2;
+            }
+            
+            .post-box {
+                padding: 10px;
+            }
+            
+            .post-actions {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .post-action {
+                flex: 1 0 calc(50% - 10px);
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar-menu li {
+                padding: 8px;
+                font-size: 14px;
+            }
+            
+            .sidebar-menu li i {
+                margin-right: 5px;
+                font-size: 14px;
+            }
+            
+            .post {
+                padding: 10px;
+            }
+            
+            .post-button, .media-button {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -147,32 +279,20 @@
         <a href="index.html"> <i class="fas fa-sign-out-alt"></i> Cerrar sesión </a>
     </div>
 
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        <div class="main">
-            <div class="sidebar">
-                <ul class="sidebar-menu">
-                    <li><i class="fas fa-user"></i> Mi perfil</li>
-                    <li><i class="fas fa-users"></i> Amigos</li>
-                    <li><i class="fas fa-plus-circle"></i> Agregar contenido</li>
-                    <li><i class="fas fa-video"></i> Iniciar video</li>
-                    <li><i class="fas fa-cog"></i> Configuración</li>
-                    <li><i class="fas fa-moon"></i> Modo oscuro</li>
-                    <li><i class="fas fa-sign-out-alt"></i> Cerrar sesión</li>
-                </ul>
-            </div>
-
-
-
-   
-
-
-
-
-
-
-
+    <div class="main">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><i class="fas fa-user"></i> Mi perfil</li>
+                <li><i class="fas fa-users"></i> Amigos</li>
+                <li><i class="fas fa-plus-circle"></i> Agregar contenido</li>
+                <li><i class="fas fa-video"></i> Iniciar video</li>
+                <li><i class="fas fa-cog"></i> Configuración</li>
+                <li><i class="fas fa-moon"></i> Modo oscuro</li>
+                <li><i class="fas fa-sign-out-alt"></i> Cerrar sesión</li>
+            </ul>
+        </div>
 
         <div class="content">
             <div class="post-box">
@@ -180,10 +300,10 @@
                 
                 <div class="media-buttons">
                     <button id="photo-button" class="media-button">
-                        <i>📷</i> Foto
+                        <i class="fas fa-camera"></i> Foto
                     </button>
                     <button id="video-button" class="media-button">
-                        <i>🎥</i> Video
+                        <i class="fas fa-video"></i> Video
                     </button>
                 </div>
                 
@@ -206,24 +326,26 @@
             const menuTitle = document.getElementById('menu-title');
             const menuItems = document.getElementById('menu-items');
             
-            menuTitle.addEventListener('click', function() {
-                menuItems.classList.toggle('show');
+            if (menuTitle && menuItems) {
+                menuTitle.addEventListener('click', function() {
+                    menuItems.classList.toggle('show');
+                    
+                    // Cambiar el icono de flecha
+                    if (menuItems.classList.contains('show')) {
+                        menuTitle.innerHTML = 'Menú ▲';
+                    } else {
+                        menuTitle.innerHTML = 'Menú ▼';
+                    }
+                });
                 
-                // Cambiar el icono de flecha
-                if (menuItems.classList.contains('show')) {
-                    menuTitle.innerHTML = 'Menú ▲';
-                } else {
-                    menuTitle.innerHTML = 'Menú ▼';
-                }
-            });
-            
-            // Cerrar el menú si se hace clic fuera de él
-            document.addEventListener('click', function(event) {
-                if (!menuTitle.contains(event.target) && !menuItems.contains(event.target)) {
-                    menuItems.classList.remove('show');
-                    menuTitle.innerHTML = 'Menú ▼';
-                }
-            });
+                // Cerrar el menú si se hace clic fuera de él
+                document.addEventListener('click', function(event) {
+                    if (!menuTitle.contains(event.target) && !menuItems.contains(event.target)) {
+                        menuItems.classList.remove('show');
+                        menuTitle.innerHTML = 'Menú ▼';
+                    }
+                });
+            }
         });
     </script>
     <script src="app.js"></script>
