@@ -970,6 +970,32 @@
                 }
             });
         });
+
+
+           // Script para el menú desplegable
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuTitle = document.getElementById('menu-title');
+            const menuItems = document.getElementById('menu-items');
+            
+            menuTitle.addEventListener('click', function() {
+                menuItems.classList.toggle('show');
+                
+                // Cambiar el icono de flecha
+                if (menuItems.classList.contains('show')) {
+                    menuTitle.innerHTML = 'Menú ▲';
+                } else {
+                    menuTitle.innerHTML = 'Menú ▼';
+                }
+            });
+            
+            // Cerrar el menú si se hace clic fuera de él
+            document.addEventListener('click', function(event) {
+                if (!menuTitle.contains(event.target) && !menuItems.contains(event.target)) {
+                    menuItems.classList.remove('show');
+                    menuTitle.innerHTML = 'Menú ▼';
+                }
+            });
+        });
     </script>
 </body>
 </html>
