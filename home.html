@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muro Social Interactivo</title>
+    <title>Muro Social con Firebase</title>
+    <link rel="stylesheet" href="css/menu.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
+      /* Estilos generales */
+ 
+           :root {
             --primary: #800020;
             --secondary: #5a0018;
             --accent: #ff4081;
@@ -28,738 +30,134 @@
             margin: 0;
             padding: 0;
         }
-
+        
+        
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--dark);
-            color: var(--light);
+            font-family: Arial, sans-serif;
             margin: 0;
-            min-height: 100vh;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
         }
-
+        
         .header {
-            background-color: var(--primary);
-            padding: 15px 20px;
+            background-color: #ff66b3;  /* Rosa similar a la imagen */
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
+        
         .logo {
             font-weight: bold;
-            font-size: 20px;
-            color: white;
+            font-size: 24px;
         }
-
+        
         .search {
-            padding: 8px 15px;
+            padding: 8px;
             border-radius: 20px;
             border: none;
-            width: 200px;
-            background-color: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
-            font-size: 14px;
+            width: 300px;
         }
-
-        .search:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--accent);
-            background-color: white;
-        }
-
-        .logout-btn {
-            background-color: transparent;
-            border: 1px solid white;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .logout-btn:hover {
-            background-color: var(--accent);
-            border-color: var(--accent);
-        }
-
+        
         .main {
             display: flex;
-            min-height: calc(100vh - 64px);
         }
-
-        /* Sidebar */
+        
+        /* Sidebar estilo BBW */
         .sidebar {
             width: 250px;
-            background-color: var(--dark);
-            padding: 15px 0;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            height: 100vh;
         }
-
+        
         .sidebar-menu {
             list-style: none;
             padding: 0;
         }
-
+        
         .sidebar-menu li {
-            padding: 12px 20px;
+            padding: 12px 10px;
             cursor: pointer;
+            border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
-            transition: all 0.3s ease;
-            color: var(--light);
         }
-
+        
         .sidebar-menu li i {
             margin-right: 10px;
-            color: var(--accent);
-            width: 20px;
-            text-align: center;
+            color: #ff66b3;
         }
-
+        
         .sidebar-menu li:hover {
-            background-color: rgba(255, 64, 129, 0.1);
-            color: var(--accent);
+            background-color: #fff0f5;
         }
-
-        .sidebar-menu li.active {
-            background-color: var(--secondary);
-            border-left: 3px solid var(--accent);
-        }
-
+        
         /* Contenido principal */
         .content {
             flex: 1;
             padding: 20px;
-            background-color: rgba(26, 26, 46, 0.8);
         }
-
-        /* Caja de publicación */
-        .post-box {
-            background-color: var(--secondary);
+        
+        /* Publicaciones */
+        .post {
+            background-color: white;
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
-        .post-input {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 5px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background-color: rgba(0, 0, 0, 0.2);
-            color: white;
-            margin-bottom: 12px;
-            font-size: 14px;
-            resize: none;
-            min-height: 80px;
-        }
-
-        .post-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .post-input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(255, 64, 129, 0.3);
-        }
-
-        .media-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .media-button {
-            background-color: rgba(255, 64, 129, 0.2);
-            border: none;
-            color: var(--light);
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-
-        .media-button:hover {
-            background-color: var(--accent);
-        }
-
-        .media-button i {
-            margin-right: 5px;
-            font-size: 14px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .media-preview {
-            margin: 12px 0;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .media-preview img, .media-preview video {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            margin: 0 auto;
-            border-radius: 5px;
-        }
-
-        .remove-media {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: var(--danger);
-            color: white;
-            border: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .post-button {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            float: right;
-        }
-
-        .post-button:hover {
-            background-color: #ff1a6a;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Publicaciones */
-        .posts-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .post {
-            background-color: var(--secondary);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-
+        
         .post-header {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-
-        .post-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .post-user-info {
-            flex-grow: 1;
-        }
-
+        
         .post-user {
             font-weight: bold;
-            color: white;
-            display: block;
-            margin-bottom: 2px;
+            margin-left: 10px;
         }
-
-        .post-time {
-            font-size: 11px;
-            color: var(--gray);
-        }
-
+        
         .post-content {
-            margin: 12px 0;
-            color: var(--light);
-            line-height: 1.5;
-            font-size: 14px;
-            white-space: pre-line;
+            margin: 10px 0;
         }
-
-        .post-media {
-            margin: 12px 0;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .post-media img, .post-media video {
-            max-width: 100%;
-            max-height: 400px;
-            display: block;
-            margin: 0 auto;
-            border-radius: 5px;
-        }
-
+        
         .post-actions {
             display: flex;
-            justify-content: space-between;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 12px;
-            margin-top: 12px;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
         }
-
+        
         .post-action {
             cursor: pointer;
             display: flex;
             align-items: center;
-            color: var(--light);
-            transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 13px;
-            position: relative;
         }
-
-        .post-action:hover {
-            color: var(--accent);
-            background-color: rgba(255, 64, 129, 0.1);
-        }
-
+        
         .post-action i {
             margin-right: 5px;
-            font-size: 14px;
         }
-
-        .post-action.active {
-            color: var(--accent);
-        }
-
-        .post-action.liked {
-            color: var(--accent);
-        }
-
-        .post-action-count {
-            margin-left: 5px;
-            font-size: 12px;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
-
-        .post-options {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .options-btn {
-            background: none;
+        
+        /* Botones de interacción */
+        .btn {
+            background-color: #ff66b3;
+            color: white;
             border: none;
-            color: var(--light);
-            cursor: pointer;
-            font-size: 16px;
-            opacity: 0.7;
-            transition: all 0.3s;
-        }
-
-        .options-btn:hover {
-            opacity: 1;
-            color: var(--accent);
-        }
-
-        .options-menu {
-            position: absolute;
-            right: 0;
-            top: 25px;
-            background-color: var(--secondary);
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-            display: none;
-            min-width: 150px;
-        }
-
-        .options-menu.show {
-            display: block;
-        }
-
-        .options-menu button {
-            display: block;
-            width: 100%;
             padding: 8px 15px;
-            text-align: left;
-            background: none;
-            border: none;
-            color: var(--light);
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .options-menu button:hover {
-            background-color: rgba(255, 64, 129, 0.2);
-            color: var(--accent);
-        }
-
-        .options-menu button.delete {
-            color: var(--danger);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-
-        /* Comentarios */
-        .comments-section {
-            margin-top: 10px;
-            display: none;
-        }
-
-        .comments-section.show {
-            display: block;
-        }
-
-        .comment {
-            display: flex;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .comment-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .comment-content {
-            flex-grow: 1;
-        }
-
-        .comment-user {
-            font-weight: bold;
-            font-size: 13px;
-            color: white;
-        }
-
-        .comment-text {
-            font-size: 13px;
-            color: var(--light);
-            margin-top: 2px;
-        }
-
-        .comment-input {
-            display: flex;
-            margin-top: 10px;
-        }
-
-        .comment-input input {
-            flex-grow: 1;
-            padding: 8px 12px;
-            border-radius: 20px;
-            border: none;
-            background-color: rgba(0, 0, 0, 0.2);
-            color: white;
-            font-size: 13px;
-        }
-
-        .comment-input input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(255, 64, 129, 0.3);
-        }
-
-        .comment-input button {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 15px;
-            margin-left: 8px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        /* Compartir modal */
-        .share-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            display: none;
-        }
-
-        .share-modal.show {
-            display: flex;
-        }
-
-        .share-box {
-            background-color: var(--secondary);
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .share-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .share-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .close-share {
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .share-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .share-option {
-            display: flex;
-            align-items: center;
-            padding: 10px;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
+            margin: 5px;
         }
-
-        .share-option:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .share-option i {
-            margin-right: 10px;
-            font-size: 20px;
-            width: 30px;
-            text-align: center;
-        }
-
-        .share-option.facebook i {
-            color: #3b5998;
-        }
-
-        .share-option.twitter i {
-            color: #1DA1F2;
-        }
-
-        .share-option.whatsapp i {
-            color: #25D366;
-        }
-
-        .share-option.link i {
-            color: var(--accent);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                padding: 12px 15px;
-            }
-            
-            .logo {
-                font-size: 18px;
-            }
-            
-            .search {
-                width: 150px;
-                padding: 6px 12px;
-                font-size: 13px;
-            }
-            
-            .logout-btn {
-                padding: 5px 10px;
-                font-size: 13px;
-            }
-            
-            .main {
-                flex-direction: column;
-                min-height: auto;
-            }
-            
-            .sidebar {
-                width: 100%;
-                padding: 10px 0;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                overflow-x: auto;
-            }
-            
-            .sidebar-menu {
-                display: flex;
-                white-space: nowrap;
-                padding: 0 10px;
-            }
-            
-            .sidebar-menu li {
-                padding: 8px 12px;
-                font-size: 14px;
-            }
-            
-            .sidebar-menu li i {
-                margin-right: 5px;
-                font-size: 14px;
-            }
-            
-            .content {
-                padding: 15px;
-            }
-            
-            .post-box {
-                padding: 12px;
-            }
-            
-            .post-input {
-                padding: 10px 12px;
-                font-size: 14px;
-                min-height: 70px;
-            }
-            
-            .media-button {
-                padding: 5px 10px;
-                font-size: 12px;
-            }
-            
-            .post {
-                padding: 12px;
-            }
-            
-            .post-avatar {
-                width: 35px;
-                height: 35px;
-                font-size: 14px;
-            }
-            
-            .post-user {
-                font-size: 14px;
-            }
-            
-            .post-time {
-                font-size: 10px;
-            }
-            
-            .post-content {
-                font-size: 14px;
-            }
-            
-            .post-action {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-            
-            .post-action i {
-                font-size: 13px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 10px 12px;
-            }
-            
-            .logo {
-                font-size: 16px;
-            }
-            
-            .search {
-                width: 120px;
-                padding: 5px 10px;
-                font-size: 12px;
-            }
-            
-            .logout-btn {
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-            
-            .sidebar-menu li {
-                padding: 6px 10px;
-                font-size: 13px;
-            }
-            
-            .post-box {
-                padding: 10px;
-            }
-            
-            .post-input {
-                padding: 8px 10px;
-                font-size: 13px;
-                min-height: 60px;
-            }
-            
-            .post-button {
-                padding: 6px 15px;
-                font-size: 13px;
-            }
-            
-            .post-actions {
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-            
-            .post-action {
-                flex: 1 0 calc(50% - 10px);
-                justify-content: center;
-            }
+        
+        .btn:hover {
+            background-color: #e55c9f;
         }
     </style>
 </head>
@@ -767,382 +165,86 @@
     <div class="header">
         <div class="logo">SocialApp</div>
         <input type="text" class="search" placeholder="Buscar...">
-        <button class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-        </button>
+        <a href="index.html"> <i class="fas fa-sign-out-alt"></i> Cerrar sesión </a>
     </div>
 
-    <div class="main">
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="active"><i class="fas fa-home"></i> Inicio</li>
-                <li><i class="fas fa-user"></i> Perfil</li>
-                <li><i class="fas fa-users"></i> Amigos</li>
-                <li><i class="fas fa-bell"></i> Notificaciones</li>
-                <li><i class="fas fa-plus-circle"></i> Crear</li>
-                <li><i class="fas fa-video"></i> Videos</li>
-                <li><i class="fas fa-cog"></i> Configuración</li>
-            </ul>
-        </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+        <div class="main">
+            <div class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><i class="fas fa-user"></i> Mi perfil</li>
+                    <li><i class="fas fa-users"></i> Amigos</li>
+                    <li><i class="fas fa-plus-circle"></i> Agregar contenido</li>
+                    <li><i class="fas fa-video"></i> Iniciar video</li>
+                    <li><i class="fas fa-cog"></i> Configuración</li>
+                    <li><i class="fas fa-moon"></i> Modo oscuro</li>
+                    <li><i class="fas fa-sign-out-alt"></i> Cerrar sesión</li>
+                </ul>
+            </div>
+
+
+
+   
+
+
+
+
+
+
+
 
         <div class="content">
             <div class="post-box">
-                <textarea id="post-input" class="post-input" placeholder="¿Qué estás pensando?"></textarea>
+                <input type="text" id="post-input" class="post-input" placeholder="¿Qué estás pensando?">
                 
                 <div class="media-buttons">
                     <button id="photo-button" class="media-button">
-                        <i class="fas fa-camera"></i> Foto
+                        <i>📷</i> Foto
                     </button>
                     <button id="video-button" class="media-button">
-                        <i class="fas fa-video"></i> Video
+                        <i>🎥</i> Video
                     </button>
                 </div>
                 
                 <input type="file" id="media-input" accept="image/*, video/*" class="hidden">
-                <div id="media-preview" class="media-preview"></div>
+                <div id="media-preview"></div>
                 
                 <button id="post-button" class="post-button">Publicar</button>
-                <div style="clear: both;"></div>
             </div>
             
-            <div id="posts-container" class="posts-container">
-                <!-- Ejemplo de publicación con todas las interacciones -->
-                <div class="post" data-post-id="1">
-                    <div class="post-options">
-                        <button class="options-btn">⋮</button>
-                        <div class="options-menu">
-                            <button class="edit-post">Editar</button>
-                            <button class="delete-post delete">Eliminar</button>
-                        </div>
-                    </div>
-                    
-                    <div class="post-header">
-                        <div class="post-avatar">JD</div>
-                        <div class="post-user-info">
-                            <span class="post-user">Juan Díaz</span>
-                            <span class="post-time">Hace 2 horas</span>
-                        </div>
-                    </div>
-                    
-                    <div class="post-content">
-                        ¡Hola a todos! Este es un ejemplo de publicación con todas las interacciones implementadas: Me gusta, Comentar, Compartir y Eliminar.
-                    </div>
-                    
-                    <div class="post-media">
-                        <img src="https://via.placeholder.com/500x300?text=Ejemplo+de+imagen" alt="Publicación">
-                    </div>
-                    
-                    <div class="post-actions">
-                        <div class="post-action like-btn" data-liked="false">
-                            <i class="fas fa-thumbs-up"></i> Me gusta
-                            <span class="post-action-count">12</span>
-                        </div>
-                        <div class="post-action comment-btn">
-                            <i class="fas fa-comment"></i> Comentar
-                            <span class="post-action-count">5</span>
-                        </div>
-                        <div class="post-action share-btn">
-                            <i class="fas fa-share"></i> Compartir
-                        </div>
-                    </div>
-                    
-                    <div class="comments-section">
-                        <div class="comment">
-                            <div class="comment-avatar">MP</div>
-                            <div class="comment-content">
-                                <div class="comment-user">María Pérez</div>
-                                <div class="comment-text">¡Excelente publicación! Me encanta este nuevo diseño.</div>
-                            </div>
-                        </div>
-                        
-                        <div class="comment">
-                            <div class="comment-avatar">CR</div>
-                            <div class="comment-content">
-                                <div class="comment-user">Carlos Ruiz</div>
-                                <div class="comment-text">¿Cómo hiciste para implementar todas estas funcionalidades?</div>
-                            </div>
-                        </div>
-                        
-                        <div class="comment-input">
-                            <input type="text" placeholder="Escribe un comentario...">
-                            <button class="comment-submit"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Otra publicación de ejemplo -->
-                <div class="post" data-post-id="2">
-                    <div class="post-options">
-                        <button class="options-btn">⋮</button>
-                        <div class="options-menu">
-                            <button class="edit-post">Editar</button>
-                            <button class="delete-post delete">Eliminar</button>
-                        </div>
-                    </div>
-                    
-                    <div class="post-header">
-                        <div class="post-avatar">MP</div>
-                        <div class="post-user-info">
-                            <span class="post-user">María Pérez</span>
-                            <span class="post-time">Ayer a las 15:30</span>
-                        </div>
-                    </div>
-                    
-                    <div class="post-content">
-                        Compartiendo este hermoso día en el parque. ¡La naturaleza es increíble! 🌳🌞
-                    </div>
-                    
-                    <div class="post-actions">
-                        <div class="post-action like-btn" data-liked="true">
-                            <i class="fas fa-thumbs-up"></i> Me gusta
-                            <span class="post-action-count">24</span>
-                        </div>
-                        <div class="post-action comment-btn">
-                            <i class="fas fa-comment"></i> Comentar
-                            <span class="post-action-count">8</span>
-                        </div>
-                        <div class="post-action share-btn">
-                            <i class="fas fa-share"></i> Compartir
-                        </div>
-                    </div>
-                    
-                    <div class="comments-section">
-                        <div class="comment">
-                            <div class="comment-avatar">JD</div>
-                            <div class="comment-content">
-                                <div class="comment-user">Juan Díaz</div>
-                                <div class="comment-text">¡Qué bonito lugar! ¿Dónde es?</div>
-                            </div>
-                        </div>
-                        
-                        <div class="comment-input">
-                            <input type="text" placeholder="Escribe un comentario...">
-                            <button class="comment-submit"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para compartir -->
-    <div class="share-modal">
-        <div class="share-box">
-            <div class="share-header">
-                <div class="share-title">Compartir publicación</div>
-                <button class="close-share">&times;</button>
-            </div>
-            <div class="share-options">
-                <div class="share-option facebook">
-                    <i class="fab fa-facebook"></i>
-                    <span>Facebook</span>
-                </div>
-                <div class="share-option twitter">
-                    <i class="fab fa-twitter"></i>
-                    <span>Twitter</span>
-                </div>
-                <div class="share-option whatsapp">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp</span>
-                </div>
-                <div class="share-option link">
-                    <i class="fas fa-link"></i>
-                    <span>Copiar enlace</span>
-                </div>
+            <div id="posts-container">
+                <div class="loading">Cargando publicaciones...</div>
             </div>
         </div>
     </div>
 
     <script src="firebase-config.js"></script>
     <script>
+        // Script para el menú desplegable
         document.addEventListener('DOMContentLoaded', function() {
-            // Menú de opciones para posts
-            const optionsBtns = document.querySelectorAll('.options-btn');
-            optionsBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const menu = this.nextElementSibling;
-                    document.querySelectorAll('.options-menu').forEach(m => {
-                        if (m !== menu) m.classList.remove('show');
-                    });
-                    menu.classList.toggle('show');
-                });
-            });
+            const menuTitle = document.getElementById('menu-title');
+            const menuItems = document.getElementById('menu-items');
             
-            // Cerrar menús al hacer clic en cualquier parte
-            document.addEventListener('click', function() {
-                document.querySelectorAll('.options-menu').forEach(menu => {
-                    menu.classList.remove('show');
-                });
-            });
-            
-            // Eliminar publicación
-            document.querySelectorAll('.delete-post').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const post = this.closest('.post');
-                    if (confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
-                        post.style.animation = 'fadeOut 0.3s forwards';
-                        setTimeout(() => {
-                            post.remove();
-                        }, 300);
-                    }
-                });
-            });
-            
-            // Me gusta
-            document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const isLiked = this.getAttribute('data-liked') === 'true';
-                    const countElement = this.querySelector('.post-action-count');
-                    let count = parseInt(countElement.textContent);
-                    
-                    if (isLiked) {
-                        this.setAttribute('data-liked', 'false');
-                        this.classList.remove('liked');
-                        count--;
-                    } else {
-                        this.setAttribute('data-liked', 'true');
-                        this.classList.add('liked');
-                        count++;
-                    }
-                    
-                    countElement.textContent = count;
-                });
-            });
-            
-            // Comentarios
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const commentsSection = this.closest('.post').querySelector('.comments-section');
-                    commentsSection.classList.toggle('show');
-                });
-            });
-            
-            // Enviar comentario
-            document.querySelectorAll('.comment-submit').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const input = this.previousElementSibling;
-                    const commentText = input.value.trim();
-                    
-                    if (commentText) {
-                        const commentsContainer = this.closest('.comments-section').querySelector('.comment-input');
-                        const newComment = document.createElement('div');
-                        newComment.className = 'comment';
-                        newComment.innerHTML = `
-                            <div class="comment-avatar">TU</div>
-                            <div class="comment-content">
-                                <div class="comment-user">Tú</div>
-                                <div class="comment-text">${commentText}</div>
-                            </div>
-                        `;
-                        commentsContainer.insertAdjacentElement('beforebegin', newComment);
-                        input.value = '';
-                        
-                        // Actualizar contador de comentarios
-                        const commentCount = this.closest('.post').querySelector('.comment-btn .post-action-count');
-                        commentCount.textContent = parseInt(commentCount.textContent) + 1;
-                    }
-                });
-            });
-            
-            // Compartir
-            const shareModal = document.querySelector('.share-modal');
-            document.querySelectorAll('.share-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    shareModal.classList.add('show');
-                });
-            });
-            
-            // Cerrar modal de compartir
-            document.querySelector('.close-share').addEventListener('click', function() {
-                shareModal.classList.remove('show');
-            });
-            
-            // Cerrar modal al hacer clic fuera
-            shareModal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('show');
-                }
-            });
-            
-            // Subir media (fotos/videos)
-            const photoButton = document.getElementById('photo-button');
-            const videoButton = document.getElementById('video-button');
-            const mediaInput = document.getElementById('media-input');
-            const mediaPreview = document.getElementById('media-preview');
-            
-            photoButton.addEventListener('click', function() {
-                mediaInput.accept = 'image/*';
-                mediaInput.click();
-            });
-            
-            videoButton.addEventListener('click', function() {
-                mediaInput.accept = 'video/*';
-                mediaInput.click();
-            });
-            
-            mediaInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    const file = e.target.files[0];
-                    const fileType = file.type.split('/')[0];
-                    const fileURL = URL.createObjectURL(file);
-                    
-                    mediaPreview.innerHTML = '';
-                    
-                    if (fileType === 'image') {
-                        const img = document.createElement('img');
-                        img.src = fileURL;
-                        mediaPreview.appendChild(img);
-                    } else if (fileType === 'video') {
-                        const video = document.createElement('video');
-                        video.src = fileURL;
-                        video.controls = true;
-                        mediaPreview.appendChild(video);
-                    }
-                    
-                    // Botón para eliminar el media
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'remove-media';
-                    removeBtn.innerHTML = '&times;';
-                    removeBtn.addEventListener('click', function() {
-                        mediaPreview.innerHTML = '';
-                        mediaInput.value = '';
-                    });
-                    mediaPreview.appendChild(removeBtn);
-                }
-            });
-            
-            // Publicar
-            const postButton = document.getElementById('post-button');
-            const postInput = document.getElementById('post-input');
-            
-            postButton.addEventListener('click', function() {
-                const postText = postInput.value.trim();
-                const hasMedia = mediaPreview.innerHTML !== '';
+            menuTitle.addEventListener('click', function() {
+                menuItems.classList.toggle('show');
                 
-                if (postText || hasMedia) {
-                    // Aquí iría el código para enviar el post a Firebase
-                    alert('Publicación creada con éxito!');
-                    
-                    // Limpiar campos
-                    postInput.value = '';
-                    mediaPreview.innerHTML = '';
-                    mediaInput.value = '';
+                // Cambiar el icono de flecha
+                if (menuItems.classList.contains('show')) {
+                    menuTitle.innerHTML = 'Menú ▲';
                 } else {
-                    alert('Escribe algo o agrega una imagen/video para publicar');
+                    menuTitle.innerHTML = 'Menú ▼';
                 }
             });
             
-            // Responsive: Ocultar sidebar en móviles y mostrar botón de menú
-            function handleResponsive() {
-                if (window.innerWidth <= 768) {
-                    // Para móviles, podríamos agregar un botón de menú hamburguesa
-                    // Pero por simplicidad en este ejemplo, lo dejamos como está
+            // Cerrar el menú si se hace clic fuera de él
+            document.addEventListener('click', function(event) {
+                if (!menuTitle.contains(event.target) && !menuItems.contains(event.target)) {
+                    menuItems.classList.remove('show');
+                    menuTitle.innerHTML = 'Menú ▼';
                 }
-            }
-            
-            window.addEventListener('resize', handleResponsive);
-            handleResponsive();
+            });
         });
     </script>
     <script src="app.js"></script>
